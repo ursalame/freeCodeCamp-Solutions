@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/css/bootstrap-material-design.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/css/ripples.min.css">
+
+    <style>
+        div.answer-block {
+            display: block;
+            padding: 9.5px;
+            margin: 0 0 10px;
+            font-size: 13px;
+            /*line-height: 1.42857143;*/
+            color: #333;
+            word-break: break-all;
+            word-wrap: break-word;
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            min-height: 93px;
+        }
+
+        p.answer-top {
+            font-size: x-large;
+            font-weight: 500;
+
+        }
+
+        p.answer-bottom, p.answer-top {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
+        <div class="panel panel-default">
+            <div class="panel-heading text-capitalize">
+                <h3 class="panel-title">
+                    <i class="pull-right fa fa-calculator" aria-hidden="true"></i>
+                    Calculator
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="col-sm-12">
+                    <div class="answer-block">
+                        <p class="answer-top"></p>
+                        <p class="answer-bottom"></p>
+                    </div>
+                </div>
+                <div class="keypad">
+                    <div class="calc-row">
+                        <div class="col-sm-3 text-center">
+                            <button data-type="action" data-value="ac" class="btn btn-raised btn-danger col-sm-12">AC
+                            </button>
+                        </div>
+                        <div class="col-sm-3 text-center">
+                            <button data-type="action" data-value="ce" class="btn btn-raised btn-danger col-sm-12">CE
+                            </button>
+                        </div>
+                        <div class="col-sm-3 text-center">
+                            <button data-type="action" data-value="/" class="btn btn-raised btn-info col-sm-12">÷
+                            </button>
+                        </div>
+                        <div class="col-sm-3 text-center">
+                            <button data-type="action" data-value="x" class="btn btn-raised btn-info col-sm-12">x
+                            </button>
+                        </div>
+                    </div>
+                    <div class="calc-row">
+                        <div class="col-sm-3 text-center">
+                            <button data-type="number" data-value="7" class="btn btn-raised btn-default col-sm-12">7
+                            </button>
+                        </div>
+                        <div class="col-sm-3 text-center">
+                            <button data-type="number" data-value="8" class="btn btn-raised btn-default col-sm-12">8
+                            </button>
+                        </div>
+                        <div class="col-sm-3 text-center">
+                            <button data-type="number" data-value="9" class="btn btn-raised btn-default col-sm-12">9
+                            </button>
+                        </div>
+                        <div class="col-sm-3 text-center">
+                            <button data-type="action" data-value="-" class="btn btn-raised btn-info col-sm-12">-
+                            </button>
+                        </div>
+                    </div>
+                    <div class="calc-row">
+                        <div class="col-sm-3 text-center">
+                            <button data-type="number" data-value="4" class="btn btn-raised btn-default col-sm-12">4
+                            </button>
+                        </div>
+                        <div class="col-sm-3 text-center">
+                            <button data-type="number" data-value="5" class="btn btn-raised btn-default col-sm-12">5
+                            </button>
+                        </div>
+                        <div class="col-sm-3 text-center">
+                            <button data-type="number" data-value="6" class="btn btn-raised btn-default col-sm-12">6
+                            </button>
+                        </div>
+                        <div class="col-sm-3 text-center">
+                            <button data-type="action" data-value="+" class="btn btn-raised btn-info col-sm-12">+
+                            </button>
+                        </div>
+                    </div>
+                    <div class="calc-row">
+                        <div class="col-sm-3 text-center">
+                            <button data-type="number" data-value="1" class="btn btn-raised btn-default col-sm-12">1
+                            </button>
+                        </div>
+                        <div class="col-sm-3 text-center">
+                            <button data-type="number" data-value="2" class="btn btn-raised btn-default col-sm-12">2
+                            </button>
+                        </div>
+                        <div class="col-sm-3 text-center">
+                            <button data-type="number" data-value="3" class="btn btn-raised btn-default col-sm-12">3
+                            </button>
+                        </div>
+                        <div class="col-sm-3 text-center">
+                            <button data-type="number" data-value="." class="btn btn-raised btn-info col-sm-12">.
+                            </button>
+                        </div>
+                    </div>
+                    <div class="calc-row">
+                        <div class="col-sm-9 text-center">
+                            <button data-type="number" data-value="0" class="btn btn-raised btn-default col-sm-12">0
+                            </button>
+                        </div>
+                        <div class="col-sm-3 text-center">
+                            <button data-type="action" data-value="=" class="btn btn-raised btn-success col-sm-12">=
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/js/material.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/js/ripples.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $.material.init();
+
+        $("button[data-type='number'], button[data-value='.']").click(function () {
+            var value = $(this).data("value");
+            addNumber(value);
+        });
+
+        $("button[data-value='ac']").click(function () {
+            clearAll();
+        });
+
+        $("button[data-value='ce']").click(function () {
+            clearLast();
+        });
+
+        $("button[data-value='+'], button[data-value='-'], button[data-value='x'], button[data-value='/']").click(function () {
+            var value = $(this).data("value");
+            addAction(value);
+        });
+
+        $("button[data-value='=']").click(function () {
+            var value = $(this).data("value");
+            addAction(value);
+            doMaths();
+        });
+    });
+
+    var commands = [];
+    var currentNumber = "";
+
+    function clearAll() {
+        $(".answer-top").html('');
+        $(".answer-bottom").html('');
+        commands = [];
+        currentNumber = "";
+    }
+
+    function clearLast() {
+        currentNumber = "";
+
+        $(".answer-top").html('0');
+        $(".answer-bottom").html(commands.map(function (elem) {
+            return elem.val;
+        }).join(""));
+
+    }
+
+    function addNumber(n) {
+        currentNumber += n;
+
+        var answerTop = $(".answer-top");
+        var answerBot = $(".answer-bottom");
+
+        answerTop.html(currentNumber);
+        answerBot.append(n);
+    }
+
+    function addAction(a) {
+        addCommand(a, function () {
+            $(".answer-top").html(a);
+            $(".answer-bottom").append(a);
+        });
+    }
+
+    function addCommand(val, viewCallback) {
+        //types: {0:number, 1:action}
+        if (currentNumber != "") {
+            commands.push({val: parseFloat(currentNumber), type: 0});
+            commands.push({val: val, type: 1});
+            currentNumber = "";
+            viewCallback();
+        }
+    }
+
+    function getLastAction() {
+        return commands[commands.length - 1] ? commands[commands.length - 1] : {val: "", type: "-1"};
+    }
+
+    function doMaths() {
+        var currentCommand = [];
+
+        var addToCurrentCommand = function (val) {
+            currentCommand.push(val.val);
+            if (currentCommand.length === 3) {
+                var val1 = currentCommand[0];
+                var op = currentCommand[1];
+                var val2 = currentCommand[2];
+
+                var res = getMathFunc(op)(val1, val2);
+                currentCommand = [res];
+            }
+
+        };
+
+        for (var i = 0; i < commands.length - 1; i++) {
+            var val1 = commands[i];
+            addToCurrentCommand(val1);
+        }
+
+        var answerTop = $(".answer-top");
+        var answerBot = $(".answer-bottom");
+
+        commands = [];
+        currentNumber = "";
+        answerTop.html(answerBot.html() +currentCommand[0]);
+        answerBot.html("");
+    }
+
+    function getMathFunc(op) {
+        if (op === "+") {
+            return add;
+        } else if (op === "-") {
+            return sub;
+        } else if (op === "x") {
+            return mult;
+        } else if (op === "/") {
+            return div;
+        }
+    }
+
+    function div(a,b) {
+        return a / b;
+    }
+
+    function mult(a,b) {
+        return a * b;
+    }
+
+    function add(a, b) {
+        return a + b;
+    }
+
+    function sub(a, b) {
+        return a - b;
+    }
+
+
+</script>

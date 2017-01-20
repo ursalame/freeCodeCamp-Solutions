@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Random Quote Machine</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/lumen/bootstrap.min.css">
+    <style>
+        .well {
+            margin-top: 10vh;
+            background-color: white;
+        }
+
+        body {
+            background-color: rgb(167, 217, 169);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row well col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+        <div class="quote">
+            <blockquote class="blockquote-reverse col-sm-12">
+                <div id="quote-content"></div>
+                <footer id="quote-author"></footer>
+            </blockquote>
+            <a class="btn btn-default btn-lg pull-left" id="tweet-quote" href="#" title="Tweet this quote!"
+               target="_blank">
+                <i class="fa fa-twitter"></i>
+            </a>
+            <button class="btn btn-default btn-lg pull-right" id="new-quote"><i class="fa fa-refresh"></i></button>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        fetchQuote(updateTweet);
+
+        $("#new-quote").click(function () {
+            fetchQuote()
+        });
+
+    });
+
+    function updateTweet() {
+        $('#tweet-quote').attr('href', 'https://twitter.com/intent/tweet?hashtags=quotes&related=freecodecamp&text=' + encodeQuote());
+    }
+
+    function encodeQuote() {
+        return encodeURIComponent('"' + getQuote() + '" -' + getAuthor());
+    }
+
+    function getQuote() {
+        return $("#quote-content p").text();
+    }
+
+    function getAuthor() {
+        return $("#quote-author").text();
+    }
+
+    function fetchQuote(callback) {
+        $.getJSON("http://quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=1&callback=", function (quote) {
+            $("#quote-content").html(quote[0].content);
+            $("#quote-author").text(quote[0].title);
+            $.ajaxSetup({cache: false});
+
+            callback();
+        });
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/css/bootstrap-material-design.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/css/ripples.min.css">
+
+    <style>
+        body {
+            background: url("https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-6692.jpg") no-repeat center center fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+        }
+
+        @-webkit-keyframes highlight {
+            from {
+                border: 70px solid;
+                background: gray
+            }
+            to {
+                border: 5px solid;
+            }
+        }
+
+        @-moz-keyframes spin {
+            100% {
+                -moz-transform: rotate(360deg);
+            }
+        }
+
+        @-webkit-keyframes spin {
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+
+        .highlighted {
+            -webkit-animation-name: highlight;
+            -webkit-animation-duration: 0.5s;
+            animation-timing-function: ease-in-out;
+        }
+
+        .won {
+            transition: 0.6s;
+            transform-style: preserve-3d;
+            position: relative;
+            transform: rotateY(180deg);
+        }
+
+        .back h1 {
+            padding-top: 7vh;
+        }
+
+        .back {
+            display: none;
+        }
+
+        .btn-simon:disabled {
+            transition: 1s;
+        }
+
+        .btn-simon {
+            border: 5px solid rgba(255, 255, 255, 0.25);
+            margin: 5px;
+            height: 200px;
+            width: 200px;
+        }
+
+        .btn-top-left {
+            border-top-left-radius: 100%;
+        }
+
+        .btn-top-right {
+            border-top-right-radius: 100%;
+        }
+
+        .btn-bottom-right {
+            border-bottom-right-radius: 100%;
+        }
+
+        .btn-bottom-left {
+            border-bottom-left-radius: 100%;
+        }
+
+        .circle {
+            top: 10vh;
+            position: relative;
+            padding-top: 12px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 100%;
+            width: 444px;
+            height: 444px;
+            margin: auto;
+            text-align: center;
+            box-shadow: 0 0 15px black;
+        }
+
+        .center {
+            position: absolute;
+            border-radius: 100%;
+            height: 250px;
+            width: 250px;
+            border: 15px solid;
+            top: 50%;
+            left: 50%;
+            margin: -125px;
+            background-color: whitesmoke;
+            box-shadow: 0 0 15px black;
+        }
+
+        .count {
+            font-family: 'VT323', monospace;
+            color: #DC0D29;
+            padding: 0px;
+            font-size: 2em;
+            width: 50px;
+            background-color: #32050C;
+            position: relative;
+            border: 4px solid #222;
+            border-radius: 10px;
+            margin: auto;
+        }
+
+        .label-transparent {
+            background-color: transparent;
+            color: black;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            background-color: rgba(0, 0, 0, 0.0);
+        }
+    </style>
+</head>
+<body>
+<div class="overlay"></div>
+<div class="container">
+    <div class="row col-sm-12 col-md-6 col-md-offset-3 text-center">
+        <div class="circle">
+            <button data-color="blue" class="btn btn-raised btn-info btn-simon btn-top-left"
+                    disabled="disabled"></button>
+            <button data-color="orange" class="btn btn-raised btn-warning btn-simon  btn-top-right"
+                    disabled="disabled"></button>
+            <button data-color="red" class="btn btn-raised btn-danger btn-simon btn-bottom-left"
+                    disabled="disabled"></button>
+            <button data-color="green" class="btn btn-raised btn-success btn-simon btn-bottom-right"
+                    disabled="disabled"></button>
+            <div class="center text-center">
+                <div class="front">
+                    <h1><strong id="whos-turn">--</strong></h1>
+                    <div class="score col-sm-6">
+                        <button id="btn-start" class="btn btn-fab btn-fab-mini btn-raised btn-default"><i
+                                class="fa fa-play"
+                                aria-hidden="true"></i>
+                        </button>
+                        <span class="label label-transparent">START</span>
+                    </div>
+                    <div class="score col-sm-6">
+                        <button id="btn-strict" class="btn btn-fab btn-fab-mini btn-raised btn-default"><i
+                                class="fa fa-bomb"
+                                aria-hidden="true"></i></button>
+                        <span class="label label-transparent">STRICT</span>
+                    </div>
+                    <div class="score col-sm-12">
+                        <h1 class="count">--</h1>
+                        <span class="label label-transparent">COUNT</span>
+                    </div>
+                </div>
+                <div class="back">
+                    <div class="center text-center">
+                        <h1><strong>You win!</strong></h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/js/material.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/js/ripples.min.js"></script>
+<script>
+    var game;
+    var soundBlue;
+    var soundRed;
+    var soundOrange;
+    var soundGreen;
+    $(document).ready(function () {
+        init();
+
+        $('.btn-simon').click(function () {
+            animate($(this));
+            game.registerClick(this);
+        });
+
+        $('.btn-simon[data-color="blue"]').click(function () {
+            soundBlue.play();
+        });
+
+        $('.btn-simon[data-color="red"]').click(function () {
+            soundRed.play();
+        });
+
+        $('.btn-simon[data-color="orange"]').click(function () {
+            soundOrange.play();
+        });
+
+        $('.btn-simon[data-color="green"]').click(function () {
+            soundGreen.play();
+        });
+
+        $('#btn-start').click(function () {
+            enableButtons();
+            game.start();
+        });
+
+        $('#btn-strict').click(function () {
+            game.toggleStrict();
+            $(this).toggleClass("btn-danger");
+        });
+    });
+
+    var Game = function () {
+        var score = 0;
+        var turn = 0;
+        var currentPlayer = "Simon";
+        var mode = "";
+        var delayBetweenClicks = 750;
+        var strict = false;
+        var simonSaid = [];
+        var simonBtns = [
+            $(".btn-simon[data-color='blue']"),
+            $(".btn-simon[data-color='red']"),
+            $(".btn-simon[data-color='orange']"),
+            $(".btn-simon[data-color='green']")
+        ];
+
+        this.toggleStrict = function toggleStrict() {
+            strict = !strict;
+        };
+
+        function isStrict() {
+            return strict;
+        }
+
+        function selectButton() {
+            var choice = getRandomInt(0, simonBtns.length);
+            return simonBtns[choice];
+        }
+
+        function restart() {
+            score = 0;
+            simonSaid = [];
+            turn = 0;
+            mode = "";
+            start();
+        }
+
+        this.restart = function () {
+            restart();
+        };
+
+        function start() {
+            if (mode == "") {
+                updateScore();
+                simonsTurn();
+            } else {
+                restart();
+            }
+        }
+
+        this.start = function () {
+            start()
+        };
+
+        this.registerClick = function (btn) {
+            if (isSimonTurn() && isPlayMode()) {
+                simonPlay(btn);
+                setTimeout(function () {
+                    playerTurn();
+                }, delayBetweenClicks);
+            } else if (isPlayerTurn()) {
+                playerPlay(btn);
+            }
+        };
+
+        function playerPlay(btn) {
+            if (simonSaid[turn] != btn) {
+                playerFail();
+            } else {
+                ++turn;
+
+                if (turn >= simonSaid.length) {
+                    if (isWin()) {
+                        playerWin();
+                    } else {
+                        simonsTurn();
+                        turn = 0;
+                    }
+                }
+            }
+        }
+
+        function isWin() {
+            return turn == 20;
+        }
+
+        function playerWin() {
+            setScore("!!");
+            $(".center").toggleClass("won", true);
+            $(".front").toggle(false);
+
+            setTimeout(function () {
+                $(".center").toggleClass("won", false);
+                $(".back").toggle(true);
+
+                setTimeout(function () {
+                    $(".center").toggleClass("won", true);
+                    $(".back").toggle(false);
+
+                    setTimeout(function () {
+                        $(".center").toggleClass("won", false);
+                        $(".front").toggle(true);
+                        restart();
+                    }, 400);
+                }, 2000);
+            }, 400);
+
+        }
+
+        function playerFail() {
+            turn = 0;
+            setScore("X");
+            if (!isStrict()) {
+                setSimonsTurn();
+                setTimeout(function () {
+                    replayWhatSimonSaid();
+                    setTimeout(function () {
+                        setPlayersTurn();
+                        updateScore();
+                    }, getSimonsDelay());
+                }, delayBetweenClicks);
+            } else {
+                setTimeout(function () {
+                    restart();
+                }, delayBetweenClicks);
+            }
+        }
+
+        function simonPlay(btn) {
+            simonSaid.push(btn);
+            ++score;
+            updateScore();
+        }
+
+        function isSimonTurn() {
+            return currentPlayer === "Simon";
+        }
+
+        function isPlayerTurn() {
+            return currentPlayer === "Player";
+        }
+
+        function setSimonsTurn() {
+            $("#whos-turn").html("Simon");
+            $('.overlay').toggle(true);
+            currentPlayer = "Simon";
+        }
+
+        function setPlayersTurn() {
+            $("#whos-turn").html("You");
+            $('.overlay').toggle(false);
+            currentPlayer = "Player";
+        }
+
+        function setPlayMode() {
+            mode = "play";
+        }
+
+        function setReplayMode() {
+            mode = "replay";
+        }
+
+        function isPlayMode() {
+            return mode === "play";
+        }
+
+        function isReplayMode() {
+            return mode === "replay";
+        }
+
+        function replayWhatSimonSaid() {
+            setReplayMode();
+
+            var replayWhatSimonSaidOne = function (i) {
+                if (i >= simonSaid.length) return;
+                setTimeout(function () {
+                    $(simonSaid[i]).trigger("click");
+                    replayWhatSimonSaidOne(++i);
+                }, delayBetweenClicks);
+            };
+
+            replayWhatSimonSaidOne(0);
+
+        }
+
+        function getSimonsDelay() {
+            return (simonSaid.length + 1) * delayBetweenClicks;
+        }
+
+        function simonReplayAndSelect() {
+            setTimeout(function () {
+                replayWhatSimonSaid();
+                var delay = getSimonsDelay();
+                setTimeout(function () {
+                    setPlayMode();
+                    var btn = selectButton();
+                    $(btn).trigger("click");
+                }, delay);
+            }, delayBetweenClicks);
+        }
+
+        function simonsTurn() {
+            setSimonsTurn();
+            setTimeout(function () {
+                simonReplayAndSelect();
+            }, delayBetweenClicks/2);
+        }
+
+        function playerTurn() {
+            setPlayersTurn();
+        }
+
+        function setScore(str) {
+            $('.count').html(str);
+        }
+
+        function updateScore() {
+            $('.count').html(formatScore());
+        }
+
+        function formatScore() {
+            var paddedScore = '0' + score;
+            return paddedScore.substr(-2);
+        }
+
+        function getRandomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min)) + min;
+        }
+    };
+
+    function initBlue(){
+        soundBlue = document.createElement('audio');
+        soundBlue.setAttribute('src', 'https://s3.amazonaws.com/freecodecamp/simonSound4.mp3');
+    }
+
+    function initRed(){
+        soundRed = document.createElement('audio');
+        soundRed.setAttribute('src', 'https://s3.amazonaws.com/freecodecamp/simonSound3.mp3');
+    }
+
+    function initOrange(){
+        soundOrange = document.createElement('audio');
+        soundOrange.setAttribute('src', 'https://s3.amazonaws.com/freecodecamp/simonSound2.mp3');
+    }
+
+
+    function initGreen(){
+        soundGreen = document.createElement('audio');
+        soundGreen.setAttribute('src', 'https://s3.amazonaws.com/freecodecamp/simonSound1.mp3');
+    }
+
+    function initBtns(){
+        initBlue();
+        initRed();
+        initOrange();
+        initGreen();
+    }
+
+    function init() {
+        game = new Game();
+        $('.overlay').toggle(false);
+        initBtns();
+    }
+
+    function enableButtons() {
+        $('.btn-simon').removeAttr("disabled");
+    }
+
+    function animate(btn) {
+        btn.attr('disabled', 'disabled');
+        btn.toggleClass("highlighted", true);
+
+        setTimeout(function () {
+            btn.toggleClass("highlighted", false);
+            btn.removeAttr("disabled");
+        }, 500, btn);
+    }
+</script>

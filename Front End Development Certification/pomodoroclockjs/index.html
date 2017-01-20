@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pomodoro</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/css/bootstrap-material-design.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/css/ripples.min.css">
+
+    <style>
+        .glyphicon {
+            font-size: 50px;
+        }
+
+        .timer {
+            font-family: Roboto, cursive;
+            font-weight: 400;
+        }
+
+        .jumbotron {
+            background-color: rgba(255, 255, 255, 0.5) !important;
+        }
+
+        @media (max-width: 650px) {
+            .timer {
+                font-size: 100px;
+            }
+        }
+
+        @media (min-width: 650px) {
+            .timer {
+                font-size: 200px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row col-sm-12 col-md-8 col-md-offset-2 text-center">
+        <div class="jumbotron">
+            <div class="timer">
+                <span id="time-remaining">25:00</span>
+            </div>
+
+            <div class="btn-group btn-group-justified actions">
+                <a href="javascript:void(0)" class="btn" id="btn-minus">
+                    <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+                </a>
+                <a data-status="stopped" href="javascript:void(0)" class="btn btn-success" id="btn-start-stop">
+                    <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                </a>
+                <a href="javascript:void(0)" class="btn" id="btn-add">
+                    <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/js/material.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/js/ripples.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $.material.init();
+
+        $("#btn-start-stop").click(function () {
+            togglePomodoro();
+        });
+
+        $("#btn-add").click(function () {
+            addTime();
+        });
+
+        $("#btn-minus").click(function () {
+            subTime();
+        });
+
+    });
+
+    var pomodoroTimer = 25;
+    var timeinterval;
+
+    function getTimeRemaining(endtime) {
+        var t = Date.parse(endtime) - Date.parse(new Date());
+        var seconds = Math.floor((t / 1000) % 60);
+        var minutes = Math.floor((t / 1000 / 60) % 60);
+        return {
+            'total': t,
+            'minutes': minutes,
+            'seconds': seconds
+        };
+    }
+
+    function initializeClock(endtime) {
+        var timer = $("#time-remaining");
+
+        function updateClock() {
+            var t = getTimeRemaining(endtime);
+
+            timer.html(('0' + t.minutes).slice(-2) + ':' + ('0' + t.seconds).slice(-2));
+
+            if (t.total <= 0) {
+                stopPomodoro();
+            }
+        }
+
+        updateClock();
+        timeinterval = setInterval(updateClock, 1000);
+    }
+
+    function startPomodoro() {
+        var endTime = new Date(Date.parse(new Date()) + pomodoroTimer * 60 * 1000);
+        initializeClock(endTime);
+    }
+
+    function stopPomodoro() {
+        clearInterval(timeinterval);
+        var timer = $('#time-remaining');
+        timer.toggleClass('text-danger', true);
+    }
+
+    function togglePomodoro() {
+        var btn = $('#btn-start-stop');
+        var status = btn.data('status');
+
+        var timer = $('#time-remaining');
+        timer.toggleClass('text-danger', false);
+
+        if (status == 'stopped') {
+            startPomodoro();
+            btn.data('status', 'started');
+            btn.toggleClass('btn-success', false);
+            btn.toggleClass('btn-danger', true);
+            toggleActions();
+        } else {
+            clearInterval(timeinterval);
+            timer.html(pomodoroTimer + ':' + '00');
+            btn.data('status', 'stopped');
+            btn.toggleClass('btn-success', true);
+            btn.toggleClass('btn-danger', false);
+            toggleActions();
+        }
+    }
+
+    function toggleActions() {
+        var btnMinus = $('#btn-minus');
+        var btnAdd = $('#btn-add');
+
+        var toggleDisabled = function (elem) {
+            console.log(elem.attr('disabled'));
+
+            if (elem.attr('disabled')) {
+                elem.attr('disabled', false);
+            } else {
+                elem.attr('disabled', true);
+            }
+        };
+
+        toggleDisabled(btnMinus);
+        toggleDisabled(btnAdd);
+
+    }
+
+    function addTime() {
+        var btnAdd = $('#btn-add');
+        if (!btnAdd.attr('disabled')) {
+            if (pomodoroTimer >= 60) return;
+            var timer = $('#time-remaining');
+
+            timer.html(('0' + ++pomodoroTimer).slice(-2) + ':' + '00');
+        }
+    }
+
+    function subTime() {
+        var btnMinus = $('#btn-minus');
+        if (!btnMinus.attr('disabled')) {
+            if (pomodoroTimer <= 1) return;
+            var timer = $('#time-remaining');
+
+            timer.html(('0' + --pomodoroTimer).slice(-2) + ':' + '00');
+        }
+    }
+
+</script>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Twitch Streamers</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/css/bootstrap-material-design.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/css/ripples.min.css">
+
+    <style>
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2">
+        <div class="panel panel-default">
+            <div class="panel-heading text-capitalize">
+                <h3 class="panel-title">
+                    <i class="pull-right fa fa-twitch" aria-hidden="true"></i>
+                    Twitch Streamers
+                    <div class="btn-group btn-group-justified btn-group-raised">
+                        <a id="btn-streams-all" href="javascript:void(0)" class="btn btn-success btn-status">All</a>
+                        <a id="btn-streams-online" href="javascript:void(0)" class="btn btn-status">Online</a>
+                        <a id="btn-streams-offline" href="javascript:void(0)" class="btn btn-status">Offline</a>
+                    </div>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="list-group" id="streams-list">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/js/material.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/js/ripples.min.js"></script>
+
+<script>
+    var channels = [
+        "ESL_SC2",
+        "OgamingSC2",
+        "cretetion",
+        "freecodecamp",
+        "storbeck",
+        "habathcx",
+        "RobotCaleb",
+        "noobs2ninjas",
+        "comster404"
+    ];
+
+    $(document).ready(function () {
+        $.material.init();
+        getStreams();
+
+        $("#btn-streams-all").click(function () {
+            $(".channel-online").toggle(true);
+            $(".channel-offline").toggle(true);
+            $(".error").toggle(true);
+
+            $(".btn-status").toggleClass("btn-success", false);
+            $(this).toggleClass("btn-success", true);
+        });
+
+        $("#btn-streams-offline").click(function () {
+            $(".channel-online").toggle(false);
+            $(".channel-offline").toggle(true);
+            $(".error").toggle(false);
+
+            $(".btn-status").toggleClass("btn-success", false);
+            $(this).toggleClass("btn-success", true);
+        });
+
+        $("#btn-streams-online").click(function () {
+            $(".channel-online").toggle(true);
+            $(".channel-offline").toggle(false);
+            $(".error").toggle(false);
+
+            $(".btn-status").toggleClass("btn-success", false);
+            $(this).toggleClass("btn-success", true);
+        });
+    });
+
+    function addStreamerRow(logo, link, name, description, tag) {
+        var stream = '<div class="' + tag + ' "><div class="list-group-item">' +
+            '<div class="row-action-primary">' +
+            '<img class="img-circle" src="' + logo + '">' +
+            '</div>' +
+            '<div class="row-content">' +
+            '<div class="least-content"><a href="' + link + '">' + link + '</a></div>' +
+            '<h4 class="list-group-item-heading">' + name + '</h4>' +
+            '<p class="list-group-item-text">' + description + '</p>' +
+            '</div>' +
+            '</div>' +
+            '<div class="list-group-separator"></div>' +
+            '</div></div>';
+
+        $("#streams-list").append(stream);
+    }
+
+    function getChannelInfo(channel) {
+        var url = "https://wind-bow.gomix.me/twitch-api/channels/" + channel;
+
+        $.getJSON(url, function (data) {
+            if (!Boolean(data.error)) {
+                var name = data.name;
+                var logo = data.logo;
+                var link = data.url;
+
+                addStreamerRow(logo, link, name, "Offline", "channel-offline");
+            } else {
+                addStreamerRow("", "", data.error, data.message, "error");
+            }
+        });
+    }
+
+    function getStreamInfo(channel) {
+        var url = "https://wind-bow.gomix.me/twitch-api/streams/" + channel;
+
+        $.getJSON(url, function (data) {
+            if (data.stream) {
+                var game = data.stream.channel.game;
+                var status = data.stream.channel.status;
+                var name = data.stream.channel.name;
+                var link = data.stream.channel.url;
+                var logo = data.stream.channel.logo;
+
+                addStreamerRow(logo, link, name, game + ": " + status, "channel-online");
+            } else {
+                getChannelInfo(channel);
+            }
+        });
+    }
+
+    function getStreams() {
+        $("#streams-list").html("");
+        channels.forEach(function (channel) {
+            getStreamInfo(channel);
+        });
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LocalWeather</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/paper/bootstrap.min.css">
+
+    <style>
+        .well {
+            background-color: white;
+        }
+
+        .btn, .well {
+            margin-top: 10vh;
+        }
+
+        .weather-snow {
+            background-color: azure;
+        }
+
+        .weather-thunderstorm {
+            background-color: thistle;
+        }
+
+        .weather-drizzle {
+            background-color: lightblue;
+        }
+
+        .weather-rain {
+            background-color: lightcyan;
+        }
+
+        .weather-atmosphere {
+            background-color: darkseagreen;
+        }
+
+        .weather-clear {
+            background-color: lightgoldenrodyellow;
+        }
+
+        .weather-clouds {
+            background-color: whitesmoke;
+        }
+
+        .weather-extreme {
+            background-color: palevioletred;
+        }
+
+    </style>
+</head>
+<body class="weather-snow">
+<div class="container">
+    <div class="row">
+        <div class="well well-sm col-sm-4 text-center text-capitalize" id="city">
+        </div>
+        <div class="well well-sm col-sm-4 text-center text-capitalize" id="region">
+        </div>
+        <div class="well well-sm col-sm-4 text-center text-capitalize" id="weather">
+        </div>
+        <button data-toggle="metric"
+                class="btn btn-primary col-xs-12 col-sm-4 col-sm-offset-4 text-center text-capitalize"
+                id="toggle">
+            Toggle F / C
+        </button>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        fetchCurrentWeather("metric");
+
+        $("#toggle").click(function () {
+            var unit = $(this).data("toggle");
+
+            if (unit === "metric") {
+                unit = "imperial";
+            } else {
+                unit = "metric";
+            }
+
+            $(this).data("toggle", unit);
+            fetchCurrentWeather(unit);
+        });
+    });
+
+    var fetchWeather = function (location, unit, callback) {
+        var url = "http://api.openweathermap.org/data/2.5/weather?q=";
+        url += location;
+        url += "&appid=c0dcecec283a6648aa50e976c0456d66";
+        url += "&units=" + unit;
+
+        $.getJSON(url, function (openweather) {
+            var degree = (unit === "metric") ? "C" : "F";
+            $("#weather").html(openweather.main.temp + "°" + degree);
+            callback(0, openweather);
+        });
+    };
+
+    function fetchCurrentWeather(unit) {
+        fetchUserInfo(function (err, location) {
+            fetchWeather(location, unit, function (err, openweather) {
+                var weatherClass = getWeatherClass(openweather.weather[0]);
+                var body = $("body");
+                body.className = 'weather-' + weatherClass;
+            });
+        });
+    }
+
+    function fetchUserInfo(callback) {
+        $.getJSON("http://ipinfo.io/json", function (ipinfo) {
+            $("#city").html(ipinfo.city);
+            $("#region").html(ipinfo.region);
+            $.ajaxSetup({cache: false});
+            callback(0, ipinfo.city + "," + ipinfo.country);
+        });
+    }
+
+    function getWeatherClass(weather) {
+        switch (weather.main) {
+            case "Thunderstorm":
+                return "Thunderstorm";
+                break;
+            case "Drizzle":
+                return "Drizzle";
+                break;
+            case "Rain":
+                return "Rain";
+                break;
+            case "Snow":
+                return "Snow";
+                break;
+            case "Atmosphere":
+                return "Atmosphere";
+                break;
+            case "Clear":
+                return "Clear";
+                break;
+            case "Clouds":
+                return "Clouds";
+                break;
+            case "Extreme":
+                return "Extreme";
+                break;
+        }
+    }
+</script>
+
+</body>
+</html>

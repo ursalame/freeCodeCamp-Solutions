@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Wikipedia Viewer</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/superhero/bootstrap.min.css">
+    <style>
+        .search-block {
+            margin-top: 10vh;
+        }
+
+        .search-result {
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div id="search-block" class="search-block col-sm-8 col-sm-offset-2">
+            <div class="input-group col-sm-12">
+                <span class="input-group-addon glyphicon glyphicon-search" id="search-icon"></span>
+                <input id="search-bar" type="text" class="form-control" placeholder="Search wikipedia"
+                       aria-describedby="search-icon">
+
+                <span class="input-group-btn">
+                    <a class="btn btn-default" target="_blank" href="https://en.wikipedia.org/wiki/Special:Random"
+                       type="button">
+                        <i class="fa fa-question" aria-hidden="true"></i>
+                    </a>
+                </span>
+            </div>
+            <div id="search-result" class="search-result col-sm-12">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+    });
+
+    $('#search-bar').keyup(function () {
+        clearTimeout($.data(this, 'search-timer'));
+        var wait = setTimeout(search, 500);
+        $(this).data('search-timer', wait);
+    });
+
+    function search() {
+        var title = $('#search-bar').val();
+
+        $.ajax({
+            url: 'https://en.wikipedia.org/w/api.php?action=query&list=search&format=json&srsearch=' + title,
+            dataType: 'jsonp',
+            type: 'POST',
+            success: function (data) {
+                var searchResult = $('#search-result');
+                searchResult.empty();
+
+                var articles = data.query.search;
+
+                for (var i = 0; i < articles.length; i++) {
+                    var article = '<div id="article" class="panel panel-primary">' +
+                        '<div class="panel-heading">' +
+                        '<h3 class="panel-title">' + articles[i].title + '</h3>' +
+                        '</div>' +
+                        '<div class="panel-body">' +
+                        '<p>' + articles[i].snippet + '</p>' +
+                        '</div>' +
+                        '<div class="panel-footer text-center">' +
+                        '<a class="btn btn-primary" href="https://en.wikipedia.org/wiki/' + articles[i].title + '"target="_blank">View</a>' +
+                        '</div>' +
+                        '</div>';
+                    searchResult.append(article);
+                }
+            }
+        });
+    }
+
+</script>
+
+</body>
+</html>

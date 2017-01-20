@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/css/bootstrap-material-design.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/css/ripples.min.css">
+
+    <style>
+        .tic-tac-toe-row button {
+            height: 100px;
+            width: 100%;
+        }
+
+        .board, .X-O {
+            margin-top: 10vh;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row col-sm-12 col-md-6 col-md-offset-3 text-center">
+        <div class="X-O">
+            <div class="col-xs-6">
+                <button class="btn btn-info btn-fab" id="player-o">O</button>
+            </div>
+            <div class="col-xs-6">
+                <button class="btn btn-info btn-fab" id="player-x">X</button>
+            </div>
+        </div>
+        <div id="board-container" class="col-sm-12">
+
+        </div>
+    </div>
+</div>
+</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/js/material.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.5.10/js/ripples.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $.material.init();
+
+        $("#player-o").click(function () {
+            makeGame("O");
+            $(".X-O").remove();
+        });
+
+        $("#player-x").click(function () {
+            makeGame("X");
+            $(".X-O").remove();
+        });
+    });
+
+    function makeGame(player) {
+        const game = new Game("board-container", player);
+        game.start();
+    }
+
+    const Game = function game(elemId, type) {
+        const board = function () {
+            let board = [];
+            let boardGui = [];
+            let panelFooter;
+
+            this.isFilled = function () {
+                return board.filter(function (e) {
+                        return e == 0;
+                    }).length == 0;
+            };
+
+            this.getBoard = function () {
+                return board;
+            };
+
+            function boardMakeMove(player, moveId) {
+                board[moveId] = player.getSign();
+                boardGui[moveId].html(player.getSign());
+                player.addMove(moveId);
+            }
+
+            this.makeMove = function (player, moveId) {
+                boardMakeMove(player, moveId);
+            };
+
+            function updateFooter(msg) {
+                panelFooter.html(msg);
+            }
+
+            this.updateTurn = function (player) {
+                updateFooter("<strong>Player turn: " + player.getName() + "</strong>");
+            };
+
+            this.updateWinner = function (player) {
+                updateFooter("<strong class='text-success'>Winner: " + player.getName() + "</strong>");
+            };
+
+            this.updateDraw = function (player) {
+                updateFooter("<strong class='text-warning'>Draw!</strong>");
+            };
+
+            this.makeBoard = function () {
+                const container = $("#" + elemId);
+                const panel = $('<div>', {id: "panel", "class": "board panel panel-default"}).appendTo(container);
+                const panelHeader = $('<div>', {
+                    id: "panel-header",
+                    "class": "panel-heading"
+                }).html('Tic Tac Toe').appendTo(panel);
+                const panelBody = $('<div>', {id: "panel-body", "class": "panel-body"}).appendTo(panel);
+                panelFooter = $('<div>', {id: "panel-footer", "class": "panel-footer"}).appendTo(panel);
+                const panelBoard = $('<div>', {id: "board", "class": "col-sm-12"}).appendTo(panelBody);
+
+                for (let i = 0; i < 3; i++) {
+                    const row = $('<div>', {"class": "tic-tac-toe-row"}).appendTo(panelBoard);
+                    for (let j = 0; j < 3; j++) {
+                        const btnContainer = $('<div>', {"class": "tic-tac-toe-case col-sm-4 text-center"}).appendTo(row);
+                        const btn = $('<button>', {
+                            id: "btn-" + (i * 3 + j),
+                            "data-btn": i * 3 + j,
+                            "class": "btn btn-default btn-raised"
+                        }).click(function () {
+                            if (!currentPlayer.isAi()) {
+                                const moveId = $(this).data("btn");
+                                playTurn(moveId);
+                            }
+                        }).appendTo(btnContainer);
+
+                        board.push(0);
+                        boardGui.push(btn);
+                    }
+                }
+
+            }
+        };
+
+
+        let status = "";
+        let gameBoard = new board();
+        let players = [];
+        let currentPlayer = null;
+
+        const successMoves = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        this.start = function () {
+            const player = playerFactory(false, type);
+            const ai = playerFactory(true, (type == "X" ? "O" : "X"));
+
+            players.push(player);
+            players.push(ai);
+
+            currentPlayer = getFirstPlayer();
+            start();
+        };
+
+        function restart() {
+            $("#" + elemId).html('');
+            gameBoard = new board();
+            currentPlayer = getFirstPlayer();
+
+            players.forEach(function (player) {
+                player.restart();
+            });
+
+            start();
+        }
+
+
+        const playerFactory = function (isAi, sign) {
+            const player = function () {
+                let moves = [];
+
+                this.getMoves = function () {
+                    return moves;
+                };
+
+                this.getSign = function () {
+                    return sign;
+                };
+
+                this.isAi = function () {
+                    return false;
+                };
+
+                this.addMove = function (moveId) {
+                    moves.push(moveId);
+                };
+
+                this.restart = function () {
+                    moves = [];
+                };
+
+                this.getName = function () {
+                    return "Humain";
+                }
+            };
+
+            const ai = function () {
+                let moves = [];
+
+                this.getMove = function (board) {
+                    const allowedMoves = gameBoard.getBoard().map(function (val, i) {
+                        return val == 0 ? i : -1;
+                    }).filter(function (val) {
+                        return val != -1;
+                    });
+
+                    return allowedMoves[Math.floor(Math.random() * allowedMoves.length)];
+                };
+
+                this.getSign = function () {
+                    return sign;
+                };
+
+                this.isAi = function () {
+                    return true;
+                };
+
+                this.addMove = function (moveId) {
+                    moves.push(moveId);
+                };
+
+                this.getMoves = function () {
+                    return moves;
+                };
+
+                this.restart = function () {
+                    moves = [];
+                };
+
+                this.getName = function () {
+                    return "AI";
+                }
+            };
+
+            return isAi ? new ai : new player();
+        };
+
+        function getFirstPlayer() {
+            return players.filter(function (val) {
+                return val.getSign() == "X";
+            })[0];
+        }
+
+        function start() {
+            draw();
+            status = "started";
+            gameBoard.updateTurn(currentPlayer);
+            if (currentPlayer.isAi()) {
+                doAIturn();
+            }
+        }
+
+        function playTurn(move) {
+            makeMove(currentPlayer, move);
+            if (status == "won") {
+                gameBoard.updateWinner(currentPlayer);
+                sleep(1500).then(() => {
+                    restart();
+                });
+            } else if (status == "draw") {
+                gameBoard.updateDraw();
+                sleep(1500).then(() => {
+                    restart();
+                });
+            } else {
+                nextPlayer();
+            }
+        }
+
+        function sleep(time) {
+            return new Promise((resolve) => setTimeout(resolve, time));
+        }
+
+        function doAIturn() {
+            const move = currentPlayer.getMove(board);
+
+            sleep(500).then(() => {
+                playTurn(move);
+            });
+        }
+
+        function nextPlayer() {
+            rotatePlayers();
+            gameBoard.updateTurn(currentPlayer);
+            if (currentPlayer.isAi()) {
+                doAIturn();
+            }
+        }
+
+        function makeMove(player, moveId) {
+            gameBoard.makeMove(player, moveId);
+            if (isPlayerWin(player)) {
+                status = "won";
+            } else if (gameBoard.isFilled()) {
+                status = "draw";
+            }
+        }
+
+        function isPlayerWin(player) {
+            const currentPlayerMoves = player.getMoves();
+            return successMoves.filter(function (solution) {
+                    return solution.every(function (val) {
+                        return currentPlayerMoves.indexOf(val) !== -1;
+                    })
+                }).length > 0;
+        }
+
+        function rotatePlayers() {
+            let playerIndex = players.indexOf(currentPlayer);
+
+            if (++playerIndex >= players.length) {
+                playerIndex = 0;
+            }
+
+            currentPlayer = players[playerIndex];
+        }
+
+
+        function draw() {
+            gameBoard.makeBoard();
+        }
+
+    };
+
+</script>
